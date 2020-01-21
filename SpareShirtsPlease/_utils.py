@@ -9,6 +9,8 @@ from constants import *
 def get_spreadsheet(sheet_ID, range_name):
 	'''returns the desired spreadsheet'''
 
+	final_sheet = []
+
 	creds = None
 	# the file token.pickle stores the user's access and refresh tokens, and is
 	# created automatically when the authorization flow completes for the first
@@ -38,6 +40,7 @@ def get_spreadsheet(sheet_ID, range_name):
 	if not values:
 	    print('No data found.')
 	else:
-	    print('Name, Major:')
 	    for row in values:
-	        print(row)
+	        final_sheet.append(row)
+
+	return final_sheet
