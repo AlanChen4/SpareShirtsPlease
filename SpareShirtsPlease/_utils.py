@@ -1,6 +1,9 @@
+import constants
+import getpass
 import json
 import pickle
 import os.path
+import smtplib
 
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -12,7 +15,6 @@ def get_spreadsheet(sheet_ID, range_name):
 	'''returns the desired spreadsheet'''
 
 	final_sheet = []
-
 	creds = None
 	# the file token.pickle stores the user's access and refresh tokens, and is
 	# created automatically when the authorization flow completes for the first
@@ -44,10 +46,35 @@ def get_spreadsheet(sheet_ID, range_name):
 	else:
 	    for row in values:
 	        final_sheet.append(row)
-
+	print(final_sheet)
 	return final_sheet
 
 
 def load_email():
 	'''logs into account and creates email based off email.json'''
-	pass
+	with open('data/email.json') as email_file:
+		email_info = json.load(email_file)
+		return email_info['subject'], email_info['body']
+
+
+def send_emails(recipient_list, password):
+	'''loops through recipient list and sends email to each one'''
+
+	# start gmail client
+	mail = smtplib.SMTP('smtp.gmail.com', 587)
+	mail.ehlo()
+	mail.starttls()
+
+	mail.login(USERNAME, password)
+
+	# load data for email
+	subject, body = load_email()
+	message = f'Subject: {subject}\n\n{body}'
+
+	for recipient in recipient_list:
+		mail.sendmail(USERNAME, recipient, message)
+		print(f'SENT EMAIL TO {recipient}')
+
+	print('FINISHED SENDING EMAILS')
+	mail.close()
+

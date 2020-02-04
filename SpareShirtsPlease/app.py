@@ -12,7 +12,7 @@ class SpareShirtsPlease():
 
 
 	def setup_spreadsheet(self):
-		self.sheet = _utils.get_spreadsheet(SHEET_ID, RANGE_NAME)
+		self.sheet = _utils.get_spreadsheet(SHEET_ID, TEST_RANGE)
 
 
 	def setup_email(self):
