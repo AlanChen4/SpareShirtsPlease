@@ -12,7 +12,7 @@ from constants import *
 
 
 def get_spreadsheet(sheet_ID, range_name):
-	'''returns the desired spreadsheet'''
+	'''returns the desired spreadsheet information'''
 
 	final_sheet = []
 	creds = None
@@ -46,7 +46,9 @@ def get_spreadsheet(sheet_ID, range_name):
 	else:
 	    for row in values:
 	        final_sheet.append(row)
-	return final_sheet
+
+	# converts lists of lists into a flattened list
+	return [list_email[0] for list_email in final_sheet]
 
 
 def load_email():
@@ -59,15 +61,20 @@ def load_email():
 	return email_subject, email_body
 
 
-def send_emails(recipient_list, password):
+def send_emails(recipient_list, test):
 	'''loops through recipient list and sends email to each one'''
+
+	if test:
+		USERNAME = TEST_USERNAME
 
 	# start gmail client
 	mail = smtplib.SMTP('smtp.gmail.com', 587)
 	mail.ehlo()
 	mail.starttls()
 
+	password = getpass.getpass('[Email Password *Hidden]:')
 	mail.login(USERNAME, password)
+
 
 	# load data for email
 	subject, body = load_email()

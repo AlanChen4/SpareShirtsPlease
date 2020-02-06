@@ -5,3 +5,4 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 # credentials for email sender
 USERNAME = 'alanrths@gmail.com'
+TEST_USERNAME = 'alanchens01@gmail.com'

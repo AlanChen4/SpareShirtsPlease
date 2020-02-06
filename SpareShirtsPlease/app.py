@@ -12,11 +12,11 @@ class SpareShirtsPlease():
 
 
 	def setup_spreadsheet(self):
-		self.sheet = _utils.get_spreadsheet(SHEET_ID, TEST_RANGE)
+		self.recipient_list = _utils.get_spreadsheet(SHEET_ID, TEST_RANGE)
 
 
 	def setup_email(self):
-		_utils.load_email()
+		_utils.send_emails(recipient_list=self.recipient_list, test=True)
 
 
 	# TODO: this feature may or may not be added
