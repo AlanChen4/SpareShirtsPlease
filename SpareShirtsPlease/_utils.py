@@ -46,15 +46,17 @@ def get_spreadsheet(sheet_ID, range_name):
 	else:
 	    for row in values:
 	        final_sheet.append(row)
-	print(final_sheet)
 	return final_sheet
 
 
 def load_email():
-	'''logs into account and creates email based off email.json'''
+	'''gathers necessary information about email using email.json and email_body.txt'''
 	with open('data/email.json') as email_file:
 		email_info = json.load(email_file)
-		return email_info['subject'], email_info['body']
+		email_subject = email_info['subject']
+
+	email_body = open('data/email_body.txt').read()
+	return email_subject, email_body
 
 
 def send_emails(recipient_list, password):
