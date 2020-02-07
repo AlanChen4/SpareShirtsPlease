@@ -64,7 +64,6 @@ def load_email():
 def send_emails(recipient_list):
 	'''loops through recipient list and sends email to each one'''
 
-	# start gmail client
 	mail = smtplib.SMTP('smtp.gmail.com', 587)
 	mail.ehlo()
 	mail.starttls()
@@ -72,7 +71,6 @@ def send_emails(recipient_list):
 	password = getpass.getpass('[Email Password *Hidden]:')
 	mail.login(USERNAME, password)
 
-	# load data for email
 	subject, body = load_email()
 
 	for recipient in recipient_list:

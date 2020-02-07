@@ -2,9 +2,10 @@ import _utils
 
 from constants import *
 
+
 class SpareShirtsPlease():
 
-	def setup_all(self):
+	def __init__(self):
 		'''sets up the spreadsheets, email, and tracker'''
 		self.setup_spreadsheet()
 		self.setup_email()
@@ -19,14 +20,12 @@ class SpareShirtsPlease():
 		_utils.send_emails(recipient_list=self.recipient_list)
 
 
-	# TODO: this feature may or may not be added
 	def setup_tracker(self):
 		pass
 
 
 def main():
 	s = SpareShirtsPlease()
-	s.setup_all()
 
 if __name__ == '__main__':
 	main()
