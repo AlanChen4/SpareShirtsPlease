@@ -16,7 +16,7 @@ class SpareShirtsPlease():
 
 
 	def setup_email(self):
-		_utils.send_emails(recipient_list=self.recipient_list, test=True)
+		_utils.send_emails(recipient_list=self.recipient_list)
 
 
 	# TODO: this feature may or may not be added

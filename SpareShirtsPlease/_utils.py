@@ -61,11 +61,8 @@ def load_email():
 	return email_subject, email_body
 
 
-def send_emails(recipient_list, test):
+def send_emails(recipient_list):
 	'''loops through recipient list and sends email to each one'''
-
-	if test:
-		USERNAME = TEST_USERNAME
 
 	# start gmail client
 	mail = smtplib.SMTP('smtp.gmail.com', 587)
@@ -75,13 +72,12 @@ def send_emails(recipient_list, test):
 	password = getpass.getpass('[Email Password *Hidden]:')
 	mail.login(USERNAME, password)
 
-
 	# load data for email
 	subject, body = load_email()
-	message = f'Subject: {subject}\n\n{body}'
 
 	for recipient in recipient_list:
-		mail.sendmail(USERNAME, recipient, message)
+		message = f'To: {recipient}\r\nSubject: {subject}\r\n\r\n{body}'
+		mail.sendmail(USERNAME, [recipient], message)
 		print(f'SENT EMAIL TO {recipient}')
 
 	print('FINISHED SENDING EMAILS')
