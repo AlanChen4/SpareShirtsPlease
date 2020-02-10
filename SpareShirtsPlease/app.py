@@ -1,4 +1,4 @@
-import _utils
+import utils
 
 from constants import *
 
@@ -13,11 +13,11 @@ class SpareShirtsPlease():
 
 
 	def setup_spreadsheet(self):
-		self.recipient_list = _utils.get_spreadsheet(SHEET_ID, TEST_RANGE)
+		self.recipient_list = utils.get_spreadsheet(SHEET_ID, TEST_RANGE)
 
 
 	def setup_email(self):
-		_utils.send_emails(recipient_list=self.recipient_list)
+		utils.send_emails(USERNAME, self.recipient_list)
 
 
 	def setup_tracker(self):

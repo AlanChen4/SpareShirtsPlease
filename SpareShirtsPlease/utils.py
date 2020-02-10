@@ -1,4 +1,3 @@
-import constants
 import getpass
 import json
 import pickle
@@ -8,7 +7,11 @@ import smtplib
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-from constants import *
+
+
+# global variables
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 
 def get_spreadsheet(sheet_ID, range_name):
@@ -16,6 +19,7 @@ def get_spreadsheet(sheet_ID, range_name):
 
 	final_sheet = []
 	creds = None
+	data_credentials = os.path.join(THIS_DIR, 'data/credentials.json')
 	# the file token.pickle stores the user's access and refresh tokens, and is
 	# created automatically when the authorization flow completes for the first
 	# time.
@@ -28,7 +32,7 @@ def get_spreadsheet(sheet_ID, range_name):
 	        creds.refresh(Request())
 	    else:
 	        flow = InstalledAppFlow.from_client_secrets_file(
-	            'data/credentials.json', SCOPES)
+	            data_credentials, SCOPES)
 	        creds = flow.run_local_server(port=0)
 	    # save the credentials for the next run
 	    with open('token.pickle', 'wb') as token:
@@ -61,7 +65,7 @@ def load_email():
 	return email_subject, email_body
 
 
-def send_emails(recipient_list):
+def send_emails(username, recipient_list):
 	'''loops through recipient list and sends email to each one'''
 
 	mail = smtplib.SMTP('smtp.gmail.com', 587)
@@ -69,13 +73,13 @@ def send_emails(recipient_list):
 	mail.starttls()
 
 	password = getpass.getpass('[Email Password *Hidden]:')
-	mail.login(USERNAME, password)
+	mail.login(username, password)
 
 	subject, body = load_email()
 
 	for recipient in recipient_list:
 		message = f'To: {recipient}\r\nSubject: {subject}\r\n\r\n{body}'
-		mail.sendmail(USERNAME, [recipient], message)
+		mail.sendmail(username, [recipient], message)
 		print(f'SENT EMAIL TO {recipient}')
 
 	print('FINISHED SENDING EMAILS')
