@@ -10,7 +10,6 @@ from google.auth.transport.requests import Request
 
 
 # global variables
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 
@@ -19,7 +18,6 @@ def get_spreadsheet(sheet_ID, range_name):
 
 	final_sheet = []
 	creds = None
-	data_credentials = os.path.join(THIS_DIR, 'data/credentials.json')
 	# the file token.pickle stores the user's access and refresh tokens, and is
 	# created automatically when the authorization flow completes for the first
 	# time.
@@ -32,7 +30,7 @@ def get_spreadsheet(sheet_ID, range_name):
 	        creds.refresh(Request())
 	    else:
 	        flow = InstalledAppFlow.from_client_secrets_file(
-	            data_credentials, SCOPES)
+	            'data/credentials.json', SCOPES)
 	        creds = flow.run_local_server(port=0)
 	    # save the credentials for the next run
 	    with open('token.pickle', 'wb') as token:
