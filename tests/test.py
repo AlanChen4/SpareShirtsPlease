@@ -3,7 +3,7 @@ import smtplib
 import unittest
 import warnings
 
-from SpareShirtsPlease import utils
+from SpareShirtsPlease.utils import sheets
 from SpareShirtsPlease.constants import *
 
 
@@ -20,7 +20,7 @@ class SpareShirtsTests(unittest.TestCase):
 	@ignore_warnings
 	def test_spreadsheet(self):
 		'''test access to spreadsheet'''
-		sheet_info = utils.get_spreadsheet(SHEET_ID, TEST_RANGE)
+		sheet_info = sheets.get_spreadsheet(SHEET_ID, TEST_RANGE)
 		self.assertEqual(type(sheet_info), list, f'{sheet_info}')
 
 	@ignore_warnings

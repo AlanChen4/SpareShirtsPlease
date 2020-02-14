@@ -1,5 +1,4 @@
-import utils
-
+from utils import email, scraper, sheets
 from constants import *
 
 
@@ -9,19 +8,14 @@ class SpareShirtsPlease():
 		'''sets up the spreadsheets, email, and tracker'''
 		self.setup_spreadsheet()
 		self.setup_email()
-		self.setup_tracker()
 
 
 	def setup_spreadsheet(self):
-		self.recipient_list = utils.get_spreadsheet(SHEET_ID, TEST_RANGE)
+		self.recipient_list = sheets.get_spreadsheet(SHEET_ID, TEST_RANGE)
 
 
 	def setup_email(self):
-		utils.send_emails(USERNAME, self.recipient_list)
-
-
-	def setup_tracker(self):
-		pass
+		email.send_emails(USERNAME, self.recipient_list)
 
 
 def main():
