@@ -18,7 +18,6 @@ def load_email():
 
 def send_emails(username, recipient_list):
     '''loops through recipient list and sends email to each one'''
-
     mail = smtplib.SMTP('smtp.gmail.com', 587)
     mail.ehlo()
     mail.starttls()

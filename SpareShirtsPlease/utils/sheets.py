@@ -12,7 +12,6 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 def get_spreadsheet(sheet_ID, range_name):
     '''returns the desired spreadsheet information'''
-
     final_sheet = []
     creds = None
     # the file token.pickle stores the user's access and refresh tokens, and is
