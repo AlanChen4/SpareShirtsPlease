@@ -11,17 +11,19 @@ def find_contact_email(company_name):
     3. go to /contact part of site
     4. grab email address from page
     '''
-    # make a guess at what company url is
+    # make a guess at what company contact url is
     companies_generator = search(company_name, num=3, stop=1, pause=2)
     for url in companies_generator:
         company_url = url
+    company_url += "/contact"
 
     # get the html of the contact page for company url
     session = requests.Session()
+    session.headers.update({'User-Agent': 'Mozilla/5.0'})
     contact_page = session.get(url=company_url)
 
     soup = BeautifulSoup(contact_page.text, 'html.parser')
-    print(soup.title)
+    print(soup.text)
 
 
 if __name__ == '__main__':
