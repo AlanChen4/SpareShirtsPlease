@@ -10,30 +10,45 @@ from user_agent import generate_user_agent
 
 class email_scraper():
 
-    def get_base_url(self, company_name):
+    def get_base_url(self, companies):
         '''
-        returns either the top result of
+        returns lists of either the top result of
         the google search with contact page or
         a DNE
         '''
-        companies_generator = search(company_name, num=3, stop=1, pause=2)
-        for url in companies_generator:
-            company_url = url
-        company_url += "/contact/"
+        results = []
+        for company_name in companies:
+            companies_generator = search(
+                query=company_name + ' contact',
+                num=3,
+                stop=1,
+                pause=2)
+            company_url = [url for url in companies_generator][0]
 
-        # get the html of the contact page for company url
-        session = requests.Session()
-        session.headers.update({'User-Agent': generate_user_agent(
-            device_type='desktop',
-            os=('mac', 'linux'))})
-        contact_page = session.get(url=company_url)
+            # get the html of the contact page for company url
+            session = requests.Session()
+            session.headers.update({'User-Agent': generate_user_agent(
+                device_type='desktop',
+                os=('mac', 'linux'))})
+            contact_page = session.get(url=company_url)
 
-        if contact_page.status_code >= 200:
-            return company_url
-        else:
-            return "DNE"
+            if contact_page.status_code >= 200:
+                results.append({company_name: company_url})
+            else:
+                results.append({company_name: 'DNE'})
 
-    def find_contact_email(self, list_of_urls):
+        self.add_collected_urls(results)
+
+    def add_collected_urls(self, urls):
+        '''adds urls to text file under data/scraped'''
+        index = self.create_directory('../data/scraped/collected_urls')
+        path_name = '../data/scraped/collected_urls' + index + '/data.txt'
+        with open(path_name, 'w+') as f:
+            for url in urls:
+                f.write(f'{url}\n')
+            print(f'[finished]{len(urls)} urls added')
+
+    def get_contact_email(self, list_of_urls):
         '''
         uses simple crawler to extract
         email addresses from web page
@@ -75,10 +90,19 @@ class email_scraper():
 
     def add_collected_emails(self, emails):
         '''adds emails to text file under data/scraped'''
+        index = self.create_directory('../data/scraped/collected_emails')
+        path_name = '../data/scraped/collected_emails' + index + '/data.txt'
+        with open(path_name, 'w+') as f:
+            for email in emails:
+                f.write(f'{email}\n')
+            print(f'[finished]{len(emails)} emails added')
+
+    def create_directory(self, path_name):
+        '''creates new directory and adds index if duplicate'''
         index = ''
         while True:
             try:
-                os.makedirs('../data/scraped/collected_emails' + index)
+                os.makedirs(path_name + index)
                 break
             except WindowsError:
                 if index:
@@ -88,16 +112,9 @@ class email_scraper():
                     index = '(1)'
                 # Go and try create file again
                 pass
-        path_name = '../data/scraped/collected_emails' + index + '/data.txt'
-        with open(path_name, 'w+') as f:
-            for email in emails:
-                f.write(f'{email}\n')
-            print(f'[finished]{len(emails)} emails added')
+        return index
 
 
 if __name__ == '__main__':
     e_s = email_scraper()
-
-    # find_contact_email(get_base_url('devada'))
-    e_s.find_contact_email(
-        ['https://admissions.duke.edu/contact/'])
+    e_s.get_base_url(['duke admissions', 'devada'])
