@@ -3,7 +3,6 @@ import re
 import requests
 import requests.exceptions
 
-from collections import deque
 from googlesearch import search
 from user_agent import generate_user_agent
 
@@ -58,15 +57,9 @@ class email_scraper():
             device_type='desktop',
             os=('mac', 'linux'))})
 
-        to_crawl = deque(list_of_urls)
-        crawled = set()
-        collected_emails = set()
+        collected_emails = []
 
-        while len(to_crawl):
-            # url is the current url that is being crawled
-            url = to_crawl.popleft()
-            crawled.add(url)
-
+        for url in list_of_urls:
             # gather page content from url
             try:
                 print(f'Crawling {url}')
@@ -85,7 +78,8 @@ class email_scraper():
                 page_content.text,
                 re.I))
             print(f'new emails {new_emails}')
-            collected_emails.update(new_emails)
+            collected_emails.append({url: new_emails})
+
         self.add_collected_emails(collected_emails)
 
     def add_collected_emails(self, emails):
@@ -112,9 +106,10 @@ class email_scraper():
                     index = '(1)'
                 # Go and try create file again
                 pass
+
         return index
 
 
 if __name__ == '__main__':
     e_s = email_scraper()
-    e_s.get_base_url(['duke admissions', 'devada'])
+    e_s.get_contact_email(['https://admissions.duke.edu/contact/', 'https://devada.com/contact/'])
