@@ -2,4 +2,4 @@
 *.pickle
 
 SpareShirtsPlease/data/bay_area
-SpareShirtsPlease/data/scraped
+SpareShirtsPlease/data/scraped/example.txt
