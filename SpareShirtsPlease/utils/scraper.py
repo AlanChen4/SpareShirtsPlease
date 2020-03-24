@@ -1,11 +1,10 @@
+import os
 import re
 import requests
 import requests.exceptions
 
-from bs4 import BeautifulSoup
 from collections import deque
 from googlesearch import search
-from urllib.parse import urlsplit
 from user_agent import generate_user_agent
 
 
@@ -53,11 +52,6 @@ class email_scraper():
             url = to_crawl.popleft()
             crawled.add(url)
 
-            # find base url and path for relative links
-            parts = urlsplit(url)
-            base_url = "{0.scheme}://{0.netloc}".format(parts)
-            path = url[:url.rfind('/') + 1] if '/' in parts.path else url
-
             # gather page content from url
             try:
                 print(f'Crawling {url}')
@@ -77,20 +71,28 @@ class email_scraper():
                 re.I))
             print(f'new emails {new_emails}')
             collected_emails.update(new_emails)
+        self.add_collected_emails(collected_emails)
 
-            # find and process all the anchors in the document
-            soup = BeautifulSoup(page_content.text, features='lxml')
-            for anchor in soup.find_all("a"):
-                # extract link url from the anchor
-                link = anchor.attrs["href"] if "href" in anchor.attrs else ''
-                # resolve relative links
-                if link.startswith('/'):
-                    link = base_url + link
-                elif not link.startswith('http'):
-                    link = path + link
-                # if link was not enqueued nor processed yet
-                if link not in to_crawl and link not in crawled:
-                    to_crawl.append(link)
+    def add_collected_emails(self, emails):
+        '''adds emails to text file under data/scraped'''
+        index = ''
+        while True:
+            try:
+                os.makedirs('../data/scraped/collected_emails' + index)
+                break
+            except WindowsError:
+                if index:
+                    # Append 1 to number in brackets
+                    index = '(' + str(int(index[1:-1]) + 1) + ')'
+                else:
+                    index = '(1)'
+                # Go and try create file again
+                pass
+        path_name = '../data/scraped/collected_emails' + index + '/data.txt'
+        with open(path_name, 'w+') as f:
+            for email in emails:
+                f.write(f'{email}\n')
+            print(f'[finished]{len(emails)} emails added')
 
 
 if __name__ == '__main__':
