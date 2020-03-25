@@ -27,6 +27,9 @@ class email_url_scraper():
         '''
         output = multi.Queue()
 
+        self.index, self.filepath = self.create_dir(
+            path_name='../data/scraped/collected_urls')
+
         cpus = multi.cpu_count()
         workers = []
         company_bins = chunks(cpus, companies)
@@ -34,16 +37,13 @@ class email_url_scraper():
         for cpu in range(cpus):
             worker = multi.Process(
                 name=str(cpu),
-                target=self.get_contact_page,
+                target=self.get_contact_url,
                 args=(company_bins[cpu], output,))
 
             worker.start()
             workers.append(worker)
 
-        collected_urls = set([output.get() for worker in workers])
-        self.add_collected_urls(collected_urls)
-
-    def get_contact_page(self, list_of_names, output):
+    def get_contact_url(self, list_of_names, output):
         '''
         gets the link to the contact page
         '''
@@ -61,12 +61,21 @@ class email_url_scraper():
                     resp.text,
                     features='lxml')
 
+                collected_urls = []
+                found_contact = False
                 for link in soup.find_all('a', href=True):
                     if 'contact' in link['href']:
-                        final_url = company_url + '/' + link['href']
+                        found_contact = True
+                        if 'http' in link['href']:
+                            output.put(link['href'])
+                        else:
+                            final_url = company_url + '/' + link['href']
+                            output.put(final_url)
+                        collected_urls.append(output.get())
+                if not found_contact:
+                    collected_urls.append(company_url)
+                self.update_urls(set(collected_urls))
 
-                        print(final_url)
-                        output.put(final_url)
             except requests.exceptions.RequestException as e:
                 print(f'{name}: {e}')
 
@@ -87,25 +96,26 @@ class email_url_scraper():
                         os=('mac', 'linux'))},
                     allow_redirects=True,
                     timeout=5)
-                print(attempt, url_guess)
+                print(f'found :: {url_guess}')
                 if attempt.status_code >= 200:
                     return url_guess
             except requests.exceptions.ConnectionError:
                 continue
             except requests.exceptions.ReadTimeout:
                 continue
+            except requests.exceptions.TooManyRedirects:
+                continue
 
-    def add_collected_urls(self, collected_urls):
+    def update_urls(self, collected_urls):
         '''
         adds urls to text file under data/scraped
         '''
-        index, filepath = self.create_dir('../data/scraped/collected_urls')
-        path_name = filepath + index + '/data.txt'
+        path_name = self.filepath + self.index + '/data.txt'
 
-        with open(path_name, 'w+') as f:
+        with open(path_name, 'a+') as f:
             for url in collected_urls:
                 f.write(f'{url}\n')
-            print(f'[finished]{len(collected_urls)} urls added')
+                print(f'added :: {url}')
 
     def get_contact_email(self, list_of_urls):
         '''
@@ -146,13 +156,12 @@ class email_url_scraper():
         '''
         adds emails to text file under data/scraped
         '''
-        index, filepath = self.create_dir('../data/scraped/collected_emails')
-        path_name = filepath + index + '/data.txt'
+        path_name = self.filepath + self.index + '/data.txt'
 
-        with open(path_name, 'w+') as f:
+        with open(path_name, 'a+') as f:
             for email in emails:
                 f.write(f'{email}\n')
-            print(f'[finished]{len(emails)} emails added')
+            print(f'[updated]{len(emails)} emails added')
 
     def create_dir(self, path_name):
         '''
