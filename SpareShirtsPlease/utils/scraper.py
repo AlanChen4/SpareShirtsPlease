@@ -40,9 +40,6 @@ class email_url_scraper():
             worker.start()
             workers.append(worker)
 
-        for worker in workers:
-            worker.join()
-
         collected_urls = set([output.get() for worker in workers])
         self.add_collected_urls(collected_urls)
 
