@@ -1,12 +1,11 @@
 import numpy as np
-import multiprocessing as mutli
+import multiprocessing as multi
 import os
 import re
 import requests
 import requests.exceptions
 
 from bs4 import BeautifulSoup
-from multiprocessing import Manager
 from user_agent import generate_user_agent
 
 
@@ -26,27 +25,28 @@ class email_url_scraper():
         the google search with contact page or
         a DNE
         '''
-        with Manager() as manager:
-            cpus = mutli.cpu_count()
-            workers = []
-            company_bins = chunks(cpus, companies)
-            collected_urls = manager.list()
+        output = multi.Queue()
 
-            for cpu in range(cpus):
-                worker = mutli.Process(
-                    name=str(cpu),
-                    target=self.get_contact_page,
-                    args=(company_bins[cpu], collected_urls,))
+        cpus = multi.cpu_count()
+        workers = []
+        company_bins = chunks(cpus, companies)
 
-                worker.start()
-                workers.append(worker)
+        for cpu in range(cpus):
+            worker = multi.Process(
+                name=str(cpu),
+                target=self.get_contact_page,
+                args=(company_bins[cpu], output,))
 
-            for worker in workers:
-                worker.join()
+            worker.start()
+            workers.append(worker)
 
-            self.add_collected_urls(collected_urls)
+        for worker in workers:
+            worker.join()
 
-    def get_contact_page(self, list_of_names, collected_urls):
+        collected_urls = set([output.get() for worker in workers])
+        self.add_collected_urls(collected_urls)
+
+    def get_contact_page(self, list_of_names, output):
         '''
         gets the link to the contact page
         '''
@@ -69,7 +69,7 @@ class email_url_scraper():
                         final_url = company_url + '/' + link['href']
 
                         print(final_url)
-                        collected_urls.append(final_url)
+                        output.put(final_url)
             except requests.exceptions.RequestException as e:
                 print(f'{name}: {e}')
 
