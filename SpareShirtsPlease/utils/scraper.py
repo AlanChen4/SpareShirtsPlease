@@ -99,8 +99,9 @@ class email_url_scraper():
         '''
         adds urls to text file under data/scraped
         '''
-        index = self.create_directory('../data/scraped/collected_urls')
-        path_name = '../data/scraped/collected_urls' + index + '/data.txt'
+        index, filepath = self.create_dir('../data/scraped/collected_urls')
+        path_name = filepath + index + '/data.txt'
+
         with open(path_name, 'w+') as f:
             for url in collected_urls:
                 f.write(f'{url}\n')
@@ -145,21 +146,25 @@ class email_url_scraper():
         '''
         adds emails to text file under data/scraped
         '''
-        index = self.create_directory('../data/scraped/collected_emails')
-        path_name = '../data/scraped/collected_emails' + index + '/data.txt'
+        index, filepath = self.create_dir('../data/scraped/collected_emails')
+        path_name = filepath + index + '/data.txt'
+
         with open(path_name, 'w+') as f:
             for email in emails:
                 f.write(f'{email}\n')
             print(f'[finished]{len(emails)} emails added')
 
-    def create_directory(self, path_name):
+    def create_dir(self, path_name):
         '''
         creates new directory and adds index if duplicate
         '''
+        dirname = os.path.dirname(os.path.abspath(__file__))
+        filepath = os.path.join(dirname, path_name)
+
         index = ''
         while True:
             try:
-                os.makedirs(path_name + index)
+                os.makedirs(filepath + index)
                 break
             except WindowsError:
                 if index:
@@ -170,7 +175,7 @@ class email_url_scraper():
                 # Go and try create file again
                 pass
 
-        return index
+        return index, filepath
 
 
 def main():
