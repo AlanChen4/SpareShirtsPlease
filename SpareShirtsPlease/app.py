@@ -1,4 +1,4 @@
-from utils import email_sender, scraper, sheets
+from utils import email_sender, url_scraper, sheets
 from constants import *
 
 
@@ -11,7 +11,7 @@ class SpareShirtsPlease():
         email_sender.send_emails(USERNAME, self.recipient_list)
 
     def setup_scraper(self):
-        e_s = scraper.email_url_scraper()
+        e_s = url_scraper.scraper()
         e_s.get_base_url(companies=self.recipient_list)
 
 
