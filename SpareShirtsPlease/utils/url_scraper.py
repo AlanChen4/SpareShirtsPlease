@@ -46,14 +46,15 @@ class scraper:
         '''
         gets the link to the contact page
         '''
+        session = requests.Session()
+        session.headers.update({'User-Agent': generate_user_agent(
+            device_type='desktop',
+            os=('mac', 'linux'))})
+
         for name in list_of_names:
             company_url = self.guess_url(name)
 
             # get the html of the contact page for company url
-            session = requests.Session()
-            session.headers.update({'User-Agent': generate_user_agent(
-                device_type='desktop',
-                os=('mac', 'linux'))})
             try:
                 resp = session.get(url=company_url)
                 soup = BeautifulSoup(
