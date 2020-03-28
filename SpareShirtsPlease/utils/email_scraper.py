@@ -62,9 +62,13 @@ class scraper:
 
             # extract all email addresses and add them into the resulting set
             new_emails = set(re.findall(
-                r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.[a-z]+",
+                r'(?!\S*\.(?:jpg|png|gif|bmp)(?:[\s\n\r]|$|"))[A-Z0-9._%+-]'
+                '+@[A-Z0-9.-]{3,65}\.[A-Z]{2,4}',
                 page_content.text,
                 re.I))
+
+            # remove duplicate emails when in lower case
+            new_emails = set([email.lower() for email in new_emails])
             print(f'new emails :: {new_emails}')
 
             self.add_collected_emails(new_emails)
