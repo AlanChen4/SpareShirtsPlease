@@ -67,7 +67,7 @@ class scraper:
                 page_content.text,
                 re.I))
 
-            # remove duplicate emails when in lower case
+            # remove duplicate emails when in lowercase
             new_emails = set([email.lower() for email in new_emails])
             print(f'new emails :: {new_emails}')
 
