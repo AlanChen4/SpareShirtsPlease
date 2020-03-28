@@ -24,8 +24,6 @@ class scraper:
         the google search with contact page or
         a DNE
         '''
-        output = multi.Queue()
-
         self.index, self.filepath = self.create_dir(
             path_name='../data/scraped/collected_urls')
 
@@ -37,12 +35,12 @@ class scraper:
             worker = multi.Process(
                 name=str(cpu),
                 target=self.get_contact_url,
-                args=(company_bins[cpu], output,))
+                args=(company_bins[cpu],))
 
             worker.start()
             workers.append(worker)
 
-    def get_contact_url(self, list_of_names, output):
+    def get_contact_url(self, list_of_names):
         '''
         gets the link to the contact page
         '''
@@ -67,11 +65,10 @@ class scraper:
                     if 'contact' in link['href']:
                         found_contact = True
                         if 'http' in link['href']:
-                            output.put(link['href'])
+                            collected_urls.append(link['href'])
                         else:
                             final_url = company_url + '/' + link['href']
-                            output.put(final_url)
-                        collected_urls.append(output.get())
+                            collected_urls.append(final_url)
                 if not found_contact:
                     collected_urls.append(company_url)
                 self.update_urls(set(collected_urls))
