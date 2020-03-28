@@ -18,7 +18,7 @@ def chunks(n, page_list):
 
 class scraper:
 
-    def get_base_url(self, companies):
+    def start(self, companies):
         '''
         returns lists of either the top result of
         the google search with contact page or
@@ -141,8 +141,8 @@ class scraper:
 
 
 def main():
-    e_s = scraper()
-    e_s.get_base_url(['certipath', 'devada'])
+    u_s = scraper()
+    u_s.start(['certipath', 'devada'])
 
 
 if __name__ == '__main__':

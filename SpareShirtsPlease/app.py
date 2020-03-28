@@ -12,7 +12,7 @@ class SpareShirtsPlease():
 
     def setup_scraper(self):
         e_s = url_scraper.scraper()
-        e_s.get_base_url(companies=self.recipient_list)
+        e_s.start(companies=self.recipient_list)
 
 
 def main():

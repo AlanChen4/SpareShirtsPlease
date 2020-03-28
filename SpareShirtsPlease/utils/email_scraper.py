@@ -75,3 +75,8 @@ class scraper:
                 pass
 
         return index, filepath
+
+
+if __name__ == '__main__':
+    e_s = scraper()
+    e_s.get_contact_email(['https://www.Springboard.com//contact/'])
