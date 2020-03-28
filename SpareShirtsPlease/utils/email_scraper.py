@@ -1,3 +1,5 @@
+import numpy as np
+import multiprocessing as multi
 import os
 import re
 import requests
@@ -5,9 +7,37 @@ import requests
 from user_agent import generate_user_agent
 
 
+def chunks(n, page_list):
+    '''
+    splits the list into n chunks
+    used for multiprocessing
+    '''
+    return np.array_split(page_list, n)
+
+
 class scraper:
 
-    def get_contact_email(self, list_of_urls):
+    def start(self, urls):
+        '''
+        creates text file of contact emails from given urls
+        '''
+        self.index, self.filepath = self.create_dir(
+            path_name='../data/scraped/collected_emails')
+
+        cpus = multi.cpu_count()
+        workers = []
+        url_bins = chunks(cpus, urls)
+
+        for cpu in range(cpus):
+            worker = multi.Process(
+                name=str(cpu),
+                target=self.get_contact_email,
+                args=(url_bins[cpu],))
+
+            worker.start()
+            workers.append(worker)
+
+    def get_contact_email(self, urls):
         '''
         uses simple crawler to extract
         email addresses from web page
@@ -17,12 +47,10 @@ class scraper:
             device_type='desktop',
             os=('mac', 'linux'))})
 
-        collected_emails = []
-
-        for url in list_of_urls:
+        for url in urls:
             # gather page content from url
             try:
-                print(f'Crawling {url}')
+                print(f'crawling :: {url}')
                 page_content = session.get(
                     url=url,
                     timeout=5)
@@ -37,10 +65,9 @@ class scraper:
                 r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.[a-z]+",
                 page_content.text,
                 re.I))
-            print(f'new emails {new_emails}')
-            collected_emails.append({url: new_emails})
+            print(f'new emails :: {new_emails}')
 
-        self.add_collected_emails(collected_emails)
+            self.add_collected_emails(new_emails)
 
     def add_collected_emails(self, emails):
         '''
@@ -79,4 +106,4 @@ class scraper:
 
 if __name__ == '__main__':
     e_s = scraper()
-    e_s.get_contact_email(['https://www.Springboard.com//contact/'])
+    e_s.start(['https://www.Springboard.com//contact/'])
