@@ -4,6 +4,8 @@ import unittest
 import warnings
 
 from SpareShirtsPlease.utils import sheets
+from SpareShirtsPlease.utils import url_scraper
+from SpareShirtsPlease.utils import email_scraper
 from SpareShirtsPlease.constants import *
 
 
@@ -34,6 +36,22 @@ class SpareShirtsTests(unittest.TestCase):
         login_attempt = str(mail.login('alanrths@gmail.com', password))
         login_status = 'Accepted' in login_attempt
         self.assertEqual(login_status, True, 'Failed Login')
+
+    @ignore_warnings
+    def test_url_scraper(self):
+        '''test if urls are being returned'''
+        test_url_scraper = url_scraper.scraper()
+        status = test_url_scraper.guess_url('devada')
+        self.assertEqual(status, 'https://www.devada.com', 'Failed Guess URL')
+
+    @ignore_warnings
+    def test_email_scraper(self):
+        '''test if emails are being returned'''
+        test_email_scraper = email_scraper.scraper()
+
+        test_urls = ['https://www.Springboard.com//contact/']
+        status = test_email_scraper.get_contact_email(test_urls, test=True)
+        self.assertEqual(type(status), set, f'{status}')
 
     if __name__ == '__main__':
         unittest.main()

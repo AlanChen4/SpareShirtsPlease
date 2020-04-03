@@ -136,12 +136,3 @@ class scraper:
                 pass
 
         return index, filepath
-
-
-def main():
-    u_s = scraper()
-    u_s.start(['certipath', 'devada'])
-
-
-if __name__ == '__main__':
-    main()

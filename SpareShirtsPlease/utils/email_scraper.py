@@ -37,7 +37,7 @@ class scraper:
             worker.start()
             workers.append(worker)
 
-    def get_contact_email(self, urls):
+    def get_contact_email(self, urls, test):
         '''
         uses simple crawler to extract
         email addresses from web page
@@ -69,9 +69,13 @@ class scraper:
 
             # remove duplicate emails when in lowercase
             new_emails = set([email.lower() for email in new_emails])
-            print(f'new emails :: {new_emails}')
+            print(f'new emails :: found {len(new_emails)}')
 
-            self.add_collected_emails(new_emails)
+            # if not being ran in unittest
+            if not test:
+                self.add_collected_emails(new_emails)
+            else:
+                return new_emails
 
     def add_collected_emails(self, emails):
         '''
@@ -106,8 +110,3 @@ class scraper:
                 pass
 
         return index, filepath
-
-
-if __name__ == '__main__':
-    e_s = scraper()
-    e_s.start(['https://www.Springboard.com//contact/'])
